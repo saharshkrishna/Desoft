@@ -19,21 +19,29 @@ dotenv.config();
 // Environment variables
 const PORT = process.env.PORT || 5000;
 const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://127.0.0.1:27017/CashBook';
+const FRONTEND_URL = process.env.FRONTEND_URL || '*';
 
 // Initialize express and http server
 const app = express();
 const server = createServer(app);
 
-// Socket.io setup
+// ✅ Improved CORS setup
+app.use(cors({
+  origin: FRONTEND_URL,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
+// Socket.io setup ✅ using same CORS rules
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL, // React frontend
+    origin: FRONTEND_URL,
     methods: ["GET", "POST"],
-  },
+    credentials: true
+  }
 });
 
 // Middleware
-app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -64,11 +72,9 @@ io.on('connection', (socket) => {
 // Start Server Function
 const StartServer = async () => {
   try {
-    // Connect to MongoDB
     await connectDB(MONGODB_URL);
-    console.log('✅ MongoDB Connected Successfully (Local)');
+    console.log('✅ MongoDB Connected Successfully');
 
-    // Drop the old productId index if it exists
     try {
       await Product.collection.dropIndex('productId_1');
       console.log('Dropped old productId index');
@@ -80,16 +86,15 @@ const StartServer = async () => {
       }
     }
 
-    // Start Express Server
-    server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    server.listen(PORT, () =>
+      console.log(`🚀 Server running on port ${PORT}`)
+    );
   } catch (error) {
     console.error('❌ Server startup error:', error.message);
   }
 };
 
-// Debug logging
 console.log('MongoDB URL:', MONGODB_URL);
-console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
-// Start the server
+// Start server
 StartServer();
