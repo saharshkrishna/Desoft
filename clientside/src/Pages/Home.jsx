@@ -259,8 +259,6 @@ const Home = () => {
 
   const getSectionDescription = () => {
     switch (selectedCategory) {
-      case "Special Offers":
-        return "Don't miss out on these amazing deals and special offers on premium baby products.";
       case "Diapers":
         return "Browse our collection of diapers for your little ones.";
       case "Baby Wipes":
@@ -273,6 +271,8 @@ const Home = () => {
       //     return "Browse our collection of Baby Toys for your little ones.";
       case "Baby Care":
         return "Browse our collection of Baby Care for your little ones.";
+        case "Special Offers":
+        return "Don't miss out on these amazing deals and special offers on premium baby products.";
       // case "Feeding":
       //     return "Browse our collection of Feeding for your little ones.";
       // case "Other":
@@ -413,7 +413,7 @@ const Home = () => {
                 </div>
 
                 <h3 className="font-semibold text-gray-800 mb-2">{cat.name}</h3>
-                <p className="text-sm text-gray-500">{cat.products} products</p>
+                <p className="text-sm text-gray-500">{cat.products} Products</p>
               </div>
             ))}
           </div>
