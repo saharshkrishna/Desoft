@@ -150,7 +150,7 @@ const Products = () => {
                     <div className="relative cursor-pointer" onClick={() => navigate(`/product/${product._id}`)}>
                       {product.image ? (
                         <img
-                          src={product.image}
+                          src={`${import.meta.env.VITE_R2_PUBLIC_URL}/${product.image}`}
                           alt={product.name}
                           className="w-full h-48 object-cover rounded-t-lg"
                         />

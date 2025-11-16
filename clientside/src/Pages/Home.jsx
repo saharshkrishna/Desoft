@@ -208,7 +208,7 @@ const Home = () => {
           .filter(offer => offer.isActive) // Only show active offers
           .map((offer, index) => ({
             id: offer._id,
-            image: `${API_BASE.replace('/api', '')}${offer.image}`
+            image: `${import.meta.env.VITE_R2_PUBLIC_URL}/${offer.image.replace(/^\/?uploads\//, '')}`
           }));
 
         setBannerImages(transformedBanners.length > 0 ? transformedBanners : defaultBanners);
@@ -439,7 +439,7 @@ const Home = () => {
                 >
                   <div className="relative bg-gray-50 w-full h-44 sm:h-52 flex items-center justify-center">
                     <img
-                      src={product.image ? `${import.meta.env.VITE_BACKEND_URL}${product.image}` : "/api/placeholder/200/250"}
+                      src={product.image ? `${import.meta.env.VITE_R2_PUBLIC_URL}/${product.image}` : "/api/placeholder/200/250"}
                       alt={product.name}
                       className="max-h-full max-w-full object-contain"
                     />
