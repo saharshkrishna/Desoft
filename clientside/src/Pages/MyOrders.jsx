@@ -97,7 +97,7 @@ const MyOrders = () => {
     
     try {
       // Initialize socket connection
-      socketRef.current = io('http://localhost:5000', {
+      socketRef.current = io(`${import.meta.env.VITE_BACKEND_URL}`, {
         transports: ['websocket', 'polling']
       });
       
@@ -270,6 +270,22 @@ const MyOrders = () => {
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">My Orders</h1>
           <p className="text-sm sm:text-base text-gray-600">Track and manage your orders • {isConnected ? 'Instant live updates' : 'Auto-updates every 5 seconds'}</p>
+          {/* Cancellation Reminder */}
+<div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg flex items-center gap-3 mt-3">
+  <Phone className="w-4 h-4 flex-shrink-0" />
+  <p className="text-sm">
+    To cancel an order, contact us on :{" "}
+    <a
+      href="https://wa.me/97450253513"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="font-semibold underline hover:text-yellow-900"
+    >
+      +974 5025 3513
+    </a>
+  </p>
+</div>
+
         </div>
 
         {orders.length === 0 ? (
@@ -310,7 +326,7 @@ const MyOrders = () => {
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </span>
                       <span className="text-base sm:text-lg font-bold text-gray-900">
-                        ₹{order.totalAmount}
+                        QR {order.totalAmount}
                       </span>
                     </div>
                   </div>
@@ -328,7 +344,7 @@ const MyOrders = () => {
                             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
                               {item.productId?.image ? (
                                 <img 
-                                  src={`http://localhost:5000${item.productId.image}`} 
+                                  src={`${import.meta.env.VITE_BACKEND_URL}${item.productId.image}`} 
                                   alt={item.productId.name || 'Product'} 
                                   className="w-full h-full object-cover"
                                 />
@@ -343,7 +359,7 @@ const MyOrders = () => {
                                 {item.productId?.name || 'Product Not Found'}
                               </p>
                               <p className="text-xs sm:text-sm text-gray-600">
-                                Qty: {item.quantity} | Size: {item.productId?.size || 'NB'} | ₹{item.price}
+                                Qty: {item.quantity} | Size: {item.productId?.size || 'NB'} | QR {item.price}
                               </p>
                               {item.productId?.description && (
                                 <p className="text-xs text-gray-500 mt-1 truncate hidden sm:block">
@@ -386,8 +402,8 @@ const MyOrders = () => {
                             <span className="truncate">Date: {order.delivery.date}</span>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
-                            <span className="truncate">Time: {order.delivery.time}</span>
+                            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
+                            <span className="truncate">Comment: {order.delivery.comment}</span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <CreditCard className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />

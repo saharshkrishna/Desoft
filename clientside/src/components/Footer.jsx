@@ -31,15 +31,15 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-start text-gray-300">
                 <MapPin className="h-4 w-4 mr-3 mt-0.5 text-cyan-400" />
-                <span className="text-sm">123 Baby Street, Care City, Qatar</span>
+                <span className="text-sm">Umm ghuwailina, Doha, Qatar</span>
               </div>
               <div className="flex items-center text-gray-300">
                 <Phone className="h-4 w-4 mr-3 text-cyan-400" />
-                <span className="text-sm">+974 1234 5678</span>
+                <span className="text-sm">+974 5025 3513</span>
               </div>
               <div className="flex items-center text-gray-300">
                 <Mail className="h-4 w-4 mr-3 text-cyan-400" />
-                <span className="text-sm">info@desoft.qa</span>
+                <span className="text-sm">Connect.desoft@gmail.com</span>
               </div>
             </div>
           </div>
@@ -64,16 +64,16 @@ const Footer = () => {
             <div className="space-y-2">
               <a href="#" className="block text-gray-300 hover:text-cyan-400 text-sm transition-colors">About Us</a>
               <a href="#" className="block text-gray-300 hover:text-cyan-400 text-sm transition-colors">Privacy Policy</a>
-              <a href="#" className="block text-gray-300 hover:text-cyan-400 text-sm transition-colors">Terms of Service</a>
-              <a href="#" className="block text-gray-300 hover:text-cyan-400 text-sm transition-colors">Return Policy</a>
+              {/* <a href="#" className="block text-gray-300 hover:text-cyan-400 text-sm transition-colors">Terms of Service</a>
+              <a href="#" className="block text-gray-300 hover:text-cyan-400 text-sm transition-colors">Return Policy</a> */}
             </div>
           </div>
         </div>
 
         <div className="border-t border-gray-600 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            2024 Desoft. All rights reserved. • 
-            <button 
+            2024 Desoft. All rights reserved.
+             <button 
               onClick={() => navigate('/admin-auth')}
               className="text-cyan-400 hover:text-cyan-300 ml-1 transition-colors cursor-pointer"
             >
@@ -83,7 +83,7 @@ const Footer = () => {
           <div className="flex items-center text-gray-400 text-sm mt-4 md:mt-0">
             <span>Made with</span>
             <Heart className="h-4 w-4 mx-1 text-red-500" />
-            <span>in Qatar</span>
+            {/* <span>in Qatar</span> */}
           </div>
         </div>
       </div>

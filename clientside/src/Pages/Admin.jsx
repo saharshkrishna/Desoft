@@ -32,7 +32,7 @@ const Admin = () => {
   });
 
   // API Base URL
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
   const [products, setProducts] = useState([]);
   const [banners, setBanners] = useState([]);
@@ -402,9 +402,9 @@ const Admin = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-green-100">Total Sales</p>
-              <p className="text-2xl font-bold">₹{orders.totalSales}</p>
+              <p className="text-2xl font-bold">QR {orders.totalSales}</p>
             </div>
-            <div className="text-3xl opacity-80">₹</div>
+            <div className="text-3xl opacity-80">QR</div>
           </div>
         </div>
         
@@ -514,7 +514,7 @@ const Admin = () => {
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </span>
-                      <span className="text-lg font-bold text-gray-900">₹{order.totalAmount}</span>
+                      <span className="text-lg font-bold text-gray-900">QR {order.totalAmount}</span>
                     </div>
                   </div>
 
@@ -527,6 +527,7 @@ const Admin = () => {
                         <p><span className="font-medium">Name:</span> {order.customerInfo.name}</p>
                         <p><span className="font-medium">Phone:</span> {order.customerInfo.phone}</p>
                         <p><span className="font-medium">Address:</span> {order.customerInfo.address}</p>
+                        <p><span className="font-medium">Comments:</span> {order.delivery.comment}</p>
                       </div>
                     </div>
 
@@ -538,7 +539,7 @@ const Admin = () => {
                           <div key={index} className="flex items-center gap-2">
                             {item.productId?.image && (
                               <img 
-                                src={`http://localhost:5000${item.productId.image}`} 
+                                src={`${import.meta.env.VITE_BACKEND_URL}${item.productId.image}`} 
                                 alt={item.productId?.name || 'Product'} 
                                 className="w-6 h-6 rounded object-cover"
                               />
@@ -574,7 +575,7 @@ const Admin = () => {
                         
                         <div className="text-xs text-gray-500">
                           <p><span className="font-medium">Payment:</span> {order.paymentMethod}</p>
-                          <p><span className="font-medium">Delivery:</span> {order.delivery.date} at {order.delivery.time}</p>
+                          <p><span className="font-medium">Delivery:</span> {order.delivery.date}</p>
                         </div>
                       </div>
                     </div>
@@ -624,12 +625,7 @@ const Admin = () => {
               <option>Select category</option>
               <option>Diapers</option>
               <option>Baby Wipes</option>
-              <option>Baby Formula</option>
-              <option>Baby Clothing</option>
-              <option>Baby Toys</option>
               <option>Baby Care</option>
-              <option>Feeding</option>
-              <option>Others</option>
             </select>
           </div>
           
@@ -1032,49 +1028,64 @@ const Admin = () => {
               </div>
             ) : (
               banners.map((banner) => (
-                <div key={banner._id || banner.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                  <div className="flex items-center space-x-4">
-                    <img 
-                      src={banner.image ? `${API_BASE.replace('/api', '')}${banner.image}` : '/api/placeholder/80/60'} 
-                      alt="Offer" 
-                      className="w-20 h-12 rounded-md object-cover bg-gray-200"
-                      onError={(e) => {
-                        e.target.src = '/api/placeholder/80/60';
-                      }}
-                    />
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className={`px-2 py-1 text-xs rounded ${banner.isActive ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'}`}>
-                          {banner.isActive ? 'Active' : 'Inactive'}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {new Date(banner.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => {
-                        setOfferForm({
-                          isActive: banner.isActive
-                        });
-                        setEditingOffer(banner);
-                      }}
-                      className="p-2 text-blue-500 hover:bg-blue-50 rounded"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button 
-                      onClick={() => deleteOffer(banner._id || banner.id)}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
+  <div
+    key={banner._id || banner.id}
+    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-gray-200 rounded-lg gap-3"
+  >
+    {/* Left Section (Image + Info) */}
+    <div className="flex items-center space-x-4 w-full sm:w-auto">
+      <img
+        src={
+          banner.image
+            ? `${API_BASE.replace('/api', '')}${banner.image}`
+            : '/api/placeholder/80/60'
+        }
+        alt="Offer"
+        className="w-20 h-12 rounded-md object-cover bg-gray-200"
+        onError={(e) => {
+          e.target.src = '/api/placeholder/80/60';
+        }}
+      />
+      <div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className={`px-2 py-1 text-xs rounded ${
+              banner.isActive
+                ? 'bg-green-100 text-green-600'
+                : 'bg-gray-100 text-gray-600'
+            }`}
+          >
+            {banner.isActive ? 'Active' : 'Inactive'}
+          </span>
+          <span className="text-sm text-gray-500">
+            {new Date(banner.createdAt).toLocaleDateString()}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* Right Section (Action Buttons) */}
+    <div className="flex items-center justify-end space-x-2 w-full sm:w-auto">
+      <button
+        onClick={() => {
+          setOfferForm({
+            isActive: banner.isActive,
+          });
+          setEditingOffer(banner);
+        }}
+        className="p-2 text-blue-500 hover:bg-blue-50 rounded"
+      >
+        <Edit className="w-4 h-4" />
+      </button>
+      <button
+        onClick={() => deleteOffer(banner._id || banner.id)}
+        className="p-2 text-red-500 hover:bg-red-50 rounded"
+      >
+        <Trash2 className="w-4 h-4" />
+      </button>
+    </div>
+  </div>
+)))}
           </div>
         </div>
       </div>

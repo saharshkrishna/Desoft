@@ -1,6 +1,7 @@
 const Order = require('../MongoDb/models/Order');
 const Product = require('../MongoDb/models/Product');
 const Cart = require('../MongoDb/models/Cart');
+const sendOrderNotification = require('../utils/whatsapp');
 
 // Generate unique order ID
 const generateOrderId = () => {
@@ -18,8 +19,8 @@ exports.placeOrder = async (req, res) => {
         if (!customerInfo || !customerInfo.name || !customerInfo.phone || !customerInfo.address) {
             return res.status(400).json({ error: "Customer information is required" });
         }
-        if (!delivery || !delivery.date || !delivery.time) {
-            return res.status(400).json({ error: "Delivery date and time are required" });
+        if (!delivery || !delivery.date) {
+            return res.status(400).json({ error: "Delivery date required" });
         }
         if (!cartItems || cartItems.length === 0) {
             return res.status(400).json({ error: "Cart is empty" });
@@ -75,6 +76,10 @@ exports.placeOrder = async (req, res) => {
         });
 
         await newOrder.save();
+
+        // send notification to the admin through whatsapp
+        // await sendOrderNotification(orderId, customerInfo.name, totalAmount);
+
 
         // Decrease product quantities
         for (const item of cartItems) {

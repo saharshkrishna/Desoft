@@ -1,4 +1,4 @@
-//importing modules
+// Importing modules
 const express = require('express');
 const dotenv = require('dotenv');
 const path = require('path');
@@ -7,80 +7,94 @@ const connectDB = require('./MongoDb/connect.js');
 const cors = require('cors');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
-const userRoutes = require('./routes/user.routes')
+const userRoutes = require('./routes/user.routes');
 const adminRoutes = require('./routes/admin.routes.js');
 const uploadRoutes = require('./routes/uploadRoutes.js');
 const authRoutes = require('./routes/auth.routes.js');
 const Product = require('./MongoDb/models/Product.js');
 
-//compiling .env file
+// Compile .env file
 dotenv.config();
 
-//taking the values from .env file
-const PORT = process.env.PORT;
-const MONGODB_URL = process.env.MONGODB_URL;
+// Environment variables
+const PORT = process.env.PORT || 5000;
+const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://127.0.0.1:27017/CashBook';
+const FRONTEND_URL = process.env.FRONTEND_URL || '*';
 
-//creating the server from express library
+// Initialize express and http server
 const app = express();
 const server = createServer(app);
+
+// ✅ Improved CORS setup
+app.use(cors({
+  origin: FRONTEND_URL,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
+// Socket.io setup ✅ using same CORS rules
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"]
+    origin: FRONTEND_URL,
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
-//encoding the url to make the data passed through it to a object 
-app.use(cors());
+// Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/api/user',userRoutes)
-app.use('/api/auth',authRoutes);
+
+// Routes
+app.use('/api/user', userRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/upload', uploadRoutes);
-app.use('/api/admin',adminRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Make io available to routes
+// Make io available globally
 app.set('io', io);
 
-// Socket.io connection handling
+// Socket.io events
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
-  
-  // Join user to their own room for targeted updates
+
   socket.on('join-user-room', (userId) => {
     socket.join(`user-${userId}`);
     console.log(`User ${userId} joined their room`);
   });
-  
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
 });
 
-//function to start the server
-const StartServer = async (MONGODB_URL) => {
-    //passing mongoDB url to database connecting function
+// Start Server Function
+const StartServer = async () => {
+  try {
     await connectDB(MONGODB_URL);
-    
-    // Drop the old productId index if it exists
-    try {
-        await Product.collection.dropIndex('productId_1');
-        console.log('Dropped old productId index');
-    } catch (error) {
-        if (error.code === 27) {
-            console.log('productId index does not exist, skipping...');
-        } else {
-            console.log('Error dropping index:', error.message);
-        }
-    }
-    
-    //make the server to listen the port  
-    server.listen(PORT, () => {
-        console.log(`Server started ${PORT}`)
-    });
-};
-console.log('MongoDB URL:', process.env.MONGODB_URL);
-console.log("JWT_SECRET:", process.env.JWT_SECRET);
+    console.log('✅ MongoDB Connected Successfully');
 
-StartServer(MONGODB_URL);
+    try {
+      await Product.collection.dropIndex('productId_1');
+      console.log('Dropped old productId index');
+    } catch (error) {
+      if (error.code === 27) {
+        console.log('productId index does not exist, skipping...');
+      } else {
+        console.log('Error dropping index:', error.message);
+      }
+    }
+
+    server.listen(PORT, () =>
+      console.log(`🚀 Server running on port ${PORT}`)
+    );
+  } catch (error) {
+    console.error('❌ Server startup error:', error.message);
+  }
+};
+
+console.log('MongoDB URL:', MONGODB_URL);
+
+// Start server
+StartServer();
