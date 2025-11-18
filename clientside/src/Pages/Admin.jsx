@@ -539,7 +539,7 @@ const Admin = () => {
                           <div key={index} className="flex items-center gap-2">
                             {item.productId?.image && (
                               <img 
-                                src={`${import.meta.env.VITE_R2_PUBLIC_URL}${item.productId.image}`} 
+                                src={`${import.meta.env.VITE_R2_PUBLIC_URL}/${item.productId.image}`} 
                                 alt={item.productId?.name || 'Product'} 
                                 className="w-6 h-6 rounded object-cover"
                               />
