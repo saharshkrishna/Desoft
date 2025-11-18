@@ -3,6 +3,7 @@ import Nav from "../components/Nav";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import diaperIcon from "../assets/icons/diapers.png";
 import wipesIcon from "../assets/icons/baby-wipes.png";
+import PeriodPanty from "../assets/icons/diaper_13105262.png";
 import care from "../assets/icons/baby-products_5613032.png";
 import offer from "../assets/icons/offer.png";
 import Footer from "../components/Footer";
@@ -15,11 +16,11 @@ const categories = [
   
   { name: "Diapers", products: 4, color: "blue", icon: diaperIcon },
   { name: "Baby Wipes", products: 0, color: "green", icon: wipesIcon },
-  // { name: "Baby Formula", products: 0, color: "purple", icon: babyFormula },
+  { name: "Baby Care", products: 1, color: "violet", icon: care },
+  { name: "Period Panty", products: 0, color: "purple", icon: PeriodPanty },
+  { name: "Special Offers", products: 2, color: "pink", icon: offer },
   // { name: "Baby Clothing", products: 1, color: "orange", icon: "👕" },
   // { name: "Baby Toys", products: 1, color: "yellow", icon: "🧸" },
-  { name: "Baby Care", products: 1, color: "violet", icon: care },
-  { name: "Special Offers", products: 2, color: "pink", icon: offer },
   // { name: "Feeding", products: 0, color: "pink", icon: "🍼" },
   // { name: "Others", products: 0, color: "gray", icon: "📦" },
 ];
@@ -208,7 +209,7 @@ const Home = () => {
           .filter(offer => offer.isActive) // Only show active offers
           .map((offer, index) => ({
             id: offer._id,
-            image: `${API_BASE.replace('/api', '')}${offer.image}`
+            image: `${import.meta.env.VITE_R2_PUBLIC_URL}/${offer.image.replace(/^\/?uploads\//, '')}`
           }));
 
         setBannerImages(transformedBanners.length > 0 ? transformedBanners : defaultBanners);
@@ -259,20 +260,20 @@ const Home = () => {
 
   const getSectionDescription = () => {
     switch (selectedCategory) {
-      case "Special Offers":
-        return "Don't miss out on these amazing deals and special offers on premium baby products.";
       case "Diapers":
         return "Browse our collection of diapers for your little ones.";
       case "Baby Wipes":
         return "Browse our collection of Baby Wipes for your little ones.";
-      // case "Baby Formula":
-      //     return "Browse our collection of Baby Formula for your little ones.";
+      case "Period Panty":
+           return "Explore our comfortable and reliable Period Panties for everyday use.";
       // case "Baby Clothing":
       //     return "Browse our collection of Baby Clothing for your little ones.";
       // case "Baby Toys":
       //     return "Browse our collection of Baby Toys for your little ones.";
       case "Baby Care":
         return "Browse our collection of Baby Care for your little ones.";
+        case "Special Offers":
+        return "Don't miss out on these amazing deals and special offers on premium baby products.";
       // case "Feeding":
       //     return "Browse our collection of Feeding for your little ones.";
       // case "Other":
@@ -393,7 +394,7 @@ const Home = () => {
             Shop by Category
           </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
             {categoriesWithCounts.map((cat, i) => (
               <div
                 key={i}
@@ -413,7 +414,7 @@ const Home = () => {
                 </div>
 
                 <h3 className="font-semibold text-gray-800 mb-2">{cat.name}</h3>
-                <p className="text-sm text-gray-500">{cat.products} products</p>
+                <p className="text-sm text-gray-500">{cat.products} Products</p>
               </div>
             ))}
           </div>
@@ -439,7 +440,7 @@ const Home = () => {
                 >
                   <div className="relative bg-gray-50 w-full h-44 sm:h-52 flex items-center justify-center">
                     <img
-                      src={product.image ? `${import.meta.env.VITE_BACKEND_URL}${product.image}` : "/api/placeholder/200/250"}
+                      src={product.image ? `${import.meta.env.VITE_R2_PUBLIC_URL}/${product.image}` : "/api/placeholder/200/250"}
                       alt={product.name}
                       className="max-h-full max-w-full object-contain"
                     />

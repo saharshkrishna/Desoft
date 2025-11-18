@@ -344,7 +344,7 @@ const MyOrders = () => {
                             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
                               {item.productId?.image ? (
                                 <img 
-                                  src={`${import.meta.env.VITE_BACKEND_URL}${item.productId.image}`} 
+                                  src={`${import.meta.env.VITE_R2_PUBLIC_URL}${item.productId.image}`} 
                                   alt={item.productId.name || 'Product'} 
                                   className="w-full h-full object-cover"
                                 />

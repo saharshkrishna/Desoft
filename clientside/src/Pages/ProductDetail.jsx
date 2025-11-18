@@ -102,7 +102,7 @@ const ProductDetail = () => {
               <div className="relative">
                 {product.image ? (
                   <img
-                    src={product.image}
+                    src={`${import.meta.env.VITE_R2_PUBLIC_URL}/${product.image}`}
                     alt={product.name}
                     className="w-full h-96 object-cover rounded-lg"
                   />
