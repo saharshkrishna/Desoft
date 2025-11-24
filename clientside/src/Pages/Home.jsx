@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Nav from "../components/Nav";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import diaperIcon from "../assets/icons/diapers.png";
@@ -37,6 +37,7 @@ const defaultBanners = [
   }
 ];
 
+
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState("Special Offers");
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -46,7 +47,7 @@ const Home = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [categoriesWithCounts, setCategoriesWithCounts] = useState(categories);
   const [addingToCart, setAddingToCart] = useState({});
-
+const productsRef = useRef(null);
   // API Base URL
   const API_BASE = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
@@ -56,6 +57,9 @@ const Home = () => {
 
   const handleCategoryClick = (categoryName) => {
     setSelectedCategory(categoryName);
+     setTimeout(() => {
+    productsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 200); // small delay to allow UI update
     fetchProductsByCategory(categoryName);
   };
 
@@ -352,7 +356,7 @@ const Home = () => {
         </div>
 
         {/* Features Grid */}
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="group bg-gradient-to-br from-white to-blue-50 rounded-2xl p-8 text-center shadow-md border border-blue-100 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
             <div className="relative w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
               <img src="/reviews/non-toxic.jpeg" alt="Non-toxic materials" className="w-12 h-12 object-cover rounded-full" />
@@ -423,7 +427,7 @@ const Home = () => {
 
 
       {/* Dynamic Products Section */}
-      <section className="py-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16" style={{ backgroundColor: '#edf8f9' }}>
+      <section ref={productsRef} className="py-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16" style={{ backgroundColor: '#edf8f9' }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-3">{selectedCategory}</h2>
