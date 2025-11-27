@@ -5,8 +5,10 @@ const sendOrderNotification = require('../utils/whatsapp');
 
 // Generate unique order ID
 const generateOrderId = () => {
-  return 'ORD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    return 'ORD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
 };
+
+const sendOrderEmail = require("../utils/sendOrderMail").sendOrderEmail;
 
 
 // Place Order
@@ -42,20 +44,21 @@ exports.placeOrder = async (req, res) => {
             const productId = item.productId._id || item.productId;
             const productName = item.productId.name || 'Unknown Product';
             const productPrice = item.productId.price || 0;
-            
+
             const product = await Product.findById(productId);
             if (!product) {
                 return res.status(404).json({ error: `Product ${productName} not found` });
             }
-            
+
             // Check stock availability
             if (product.stock < item.quantity) {
-                return res.status(400).json({ 
-                    error: `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${item.quantity}` 
+                return res.status(400).json({
+                    error: `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${item.quantity}`
                 });
             }
 
             orderItems.push({
+                productName : productName,
                 productId: productId,
                 quantity: item.quantity,
                 price: productPrice,
@@ -80,6 +83,10 @@ exports.placeOrder = async (req, res) => {
         // send notification to the admin through whatsapp
         // await sendOrderNotification(orderId, customerInfo.name, totalAmount);
 
+        // Send email to admin instead of WhatsApp
+        await sendOrderEmail(orderId, customerInfo, orderItems, totalAmount, delivery);
+
+
 
         // Decrease product quantities
         for (const item of cartItems) {
@@ -99,9 +106,9 @@ exports.placeOrder = async (req, res) => {
             // Don't fail the order if cart clearing fails
         }
 
-        res.status(201).json({ 
-            message: "Order placed successfully", 
-            order: newOrder 
+        res.status(201).json({
+            message: "Order placed successfully",
+            order: newOrder
         });
     } catch (error) {
         console.error('Error placing order:', error);
@@ -113,11 +120,11 @@ exports.placeOrder = async (req, res) => {
         res.status(500).json({ error: "Failed to place order", details: error.message });
     }
 };
-    
-    // Get Orders
+
+// Get Orders
 exports.getOrders = async (req, res) => {
     const { userId } = req.params;
-    
+
     try {
         const orders = await Order.find({ userId })
             .populate('items.productId')
@@ -147,15 +154,15 @@ exports.getOrderStats = async (req, res) => {
     try {
         const totalOrders = await Order.countDocuments({});
         const deliveredOrders = await Order.countDocuments({ status: 'delivered' });
-        
+
         // Calculate total sales from delivered orders
         const salesResult = await Order.aggregate([
             { $match: { status: 'delivered' } },
             { $group: { _id: null, total: { $sum: '$totalAmount' } } }
         ]);
-        
+
         const totalSales = salesResult.length > 0 ? salesResult[0].total : 0;
-        
+
         res.status(200).json({
             stats: {
                 totalOrders,
@@ -173,7 +180,7 @@ exports.getOrderStats = async (req, res) => {
 exports.updateOrderStatusAdmin = async (req, res) => {
     const { orderId } = req.params;
     const { status } = req.body;
-    
+
     try {
         if (!orderId || !status) {
             return res.status(400).json({ error: "Order ID and status are required" });
@@ -206,9 +213,9 @@ exports.updateOrderStatusAdmin = async (req, res) => {
             console.log(`Emitted order status update to user ${order.userId}`);
         }
 
-        res.status(200).json({ 
-            message: "Order status updated successfully", 
-            order 
+        res.status(200).json({
+            message: "Order status updated successfully",
+            order
         });
     } catch (err) {
         console.error('Error updating order status:', err);
@@ -272,7 +279,7 @@ exports.getOrderByUserId = async (req, res) => {
 exports.getOrderById = async (req, res) => {
     try {
         const { orderId } = req.params;
-        const order = await Order.find ({ orderId, userId: req.user._id });
+        const order = await Order.find({ orderId, userId: req.user._id });
         if (!order) {
             return res.status(404).json({ error: "Order not found" });
         }
