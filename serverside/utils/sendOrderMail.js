@@ -1,6 +1,5 @@
 // utils/sendOrderEmail.js
-const  transporter  = require("./mailConfig");
-
+const resend = require("./mailConfig");
 require('dotenv').config();
 
 exports.sendOrderEmail = async (orderId, customerInfo, orderItems, totalAmount, delivery) => {
@@ -15,11 +14,7 @@ exports.sendOrderEmail = async (orderId, customerInfo, orderItems, totalAmount, 
     )
     .join("");
 
-  const mailOptions = {
-    from: process.env.EMAIL_FROM || "noreply@yourapp.com",
-    to: process.env.ADMIN_EMAIL || "admin@yourapp.com", // send to admin
-    subject: `🛒 New Order Placed – ${orderId}`,
-    html: `
+  const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         
         <h2 style="color:#333;">New Order Received</h2>
@@ -55,8 +50,20 @@ exports.sendOrderEmail = async (orderId, customerInfo, orderItems, totalAmount, 
         <p>This is an automated notification email. Please review the order in your admin dashboard.</p>
 
       </div>
-    `,
-  };
+    `;
 
-  await transporter.sendMail(mailOptions);
+  // Sending using Resend
+  const { data, error } = await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL,     // example: "Shop <orders@yourdomain.com>"
+    to: process.env.ADMIN_EMAIL,             // send to admin
+    subject: `🛒 New Order Placed – ${orderId}`,
+    html: htmlContent,
+  });
+
+  if (error) {
+    console.error("Resend Email Error:", error);
+    throw new Error("Failed to send order email");
+  }
+
+  console.log("Resend Email Sent:", data);
 };
