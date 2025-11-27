@@ -3,7 +3,6 @@ import Nav from "../components/Nav";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import diaperIcon from "../assets/icons/diapers.png";
 import wipesIcon from "../assets/icons/baby-wipes.png";
-import PeriodPanty from "../assets/icons/diaper_13105262.png";
 import care from "../assets/icons/baby-products_5613032.png";
 import offer from "../assets/icons/offer.png";
 import Footer from "../components/Footer";
@@ -17,7 +16,6 @@ const categories = [
   { name: "Diapers", products: 4, color: "blue", icon: diaperIcon },
   { name: "Baby Wipes", products: 0, color: "green", icon: wipesIcon },
   { name: "Baby Care", products: 1, color: "violet", icon: care },
-  { name: "Period Panty", products: 0, color: "purple", icon: PeriodPanty },
   { name: "Special Offers", products: 2, color: "pink", icon: offer },
   // { name: "Baby Clothing", products: 1, color: "orange", icon: "👕" },
   // { name: "Baby Toys", products: 1, color: "yellow", icon: "🧸" },
@@ -398,7 +396,7 @@ const productsRef = useRef(null);
             Shop by Category
           </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
             {categoriesWithCounts.map((cat, i) => (
               <div
                 key={i}
