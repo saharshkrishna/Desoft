@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import WhatsAppFloatingButton from "../components/WhatsappFloatingButton";
 
 const categories = [
-  
+
   { name: "Diapers", products: 4, color: "blue", icon: diaperIcon },
   { name: "Baby Wipes", products: 0, color: "green", icon: wipesIcon },
   { name: "Baby Care", products: 1, color: "violet", icon: care },
@@ -45,7 +45,11 @@ const Home = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [categoriesWithCounts, setCategoriesWithCounts] = useState(categories);
   const [addingToCart, setAddingToCart] = useState({});
-const productsRef = useRef(null);
+  const productsRef = useRef(null);
+  const [loadedImages, setLoadedImages] = useState({});
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(true);
+
   // API Base URL
   const API_BASE = `${import.meta.env.VITE_BACKEND_URL}/api`;
 
@@ -55,15 +59,18 @@ const productsRef = useRef(null);
 
   const handleCategoryClick = (categoryName) => {
     setSelectedCategory(categoryName);
-     setTimeout(() => {
-    productsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, 200); // small delay to allow UI update
+    setTimeout(() => {
+      productsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 200); // small delay to allow UI update
     fetchProductsByCategory(categoryName);
   };
 
   // Fetch all products from backend
   const fetchAllProducts = async () => {
     try {
+      setCategoriesLoading(true);
+      setProductsLoading(true)
+
       const response = await fetch(`${API_BASE}/admin/products`);
       const data = await response.json();
 
@@ -73,6 +80,10 @@ const productsRef = useRef(null);
         // Set initial products for Special Offers (products on offer)
         const offerProducts = data.products.filter(product => product.onOffer);
         setProducts(offerProducts);
+        setCategoriesLoading(false);
+        setProductsLoading(false);
+
+
       }
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -83,23 +94,29 @@ const productsRef = useRef(null);
   // Fetch products by category
   const fetchProductsByCategory = async (categoryName) => {
     try {
+
       if (categoryName === "Special Offers") {
+
         // For special offers, get products on offer
         const response = await fetch(`${API_BASE}/admin/products/offers`);
         const data = await response.json();
 
         if (response.ok && data.products) {
           setProducts(data.products);
+          setCategoriesLoading(false);
+
         } else {
           setProducts([]);
         }
       } else {
+
         // For other categories, get products by category
         const response = await fetch(`${API_BASE}/admin/products/category/${encodeURIComponent(categoryName)}`);
         const data = await response.json();
 
         if (response.ok && data.products) {
           setProducts(data.products);
+
         } else {
           setProducts([]);
         }
@@ -267,14 +284,14 @@ const productsRef = useRef(null);
       case "Baby Wipes":
         return "Browse our collection of Baby Wipes for your little ones.";
       case "Period Panty":
-           return "Explore our comfortable and reliable Period Panties for everyday use.";
+        return "Explore our comfortable and reliable Period Panties for everyday use.";
       // case "Baby Clothing":
       //     return "Browse our collection of Baby Clothing for your little ones.";
       // case "Baby Toys":
       //     return "Browse our collection of Baby Toys for your little ones.";
       case "Baby Care":
         return "Browse our collection of Baby Care for your little ones.";
-        case "Special Offers":
+      case "Special Offers":
         return "Don't miss out on these amazing deals and special offers on premium baby products.";
       // case "Feeding":
       //     return "Browse our collection of Feeding for your little ones.";
@@ -288,32 +305,52 @@ const productsRef = useRef(null);
   return (
     <>
       <Nav />
-            <WhatsAppFloatingButton />
+      <WhatsAppFloatingButton />
 
 
       {/* Hero Carousel Banner */}
       <section
-      className="
+        className="
         relative w-full overflow-hidden
         pt-16 sm:pt-18 md:pt-20
         min-h-[220px] sm:min-h-[280px] md:min-h-[360px]"
-    >
-      <div className="relative w-full h-full">
-        <div
-          className="flex transition-transform duration-700 ease-in-out h-full"
-          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-        >
-          {bannerImages.map((banner) => (
-            <div key={banner.id} className="w-full h-full flex-shrink-0">
-              <img
-                src={banner.image}
-                alt={banner.alt || 'Banner'}
-                className="w-full h-full object-cover"
-                style={{ minWidth: '100%', minHeight: '100%' }}
-              />
-            </div>
-          ))}
-        </div>
+      >
+        <div className="relative w-full h-full">
+          <div
+            className="flex transition-transform duration-700 ease-in-out h-full"
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          >
+            {bannerImages.map((banner) => {
+              const isLoaded = loadedImages[banner.id];
+
+              return (
+                <div
+                  key={banner.id}
+                  className="relative w-full aspect-video flex-shrink-0 overflow-hidden"
+                >
+                  {/* Full-size Skeleton */}
+                  {!isLoaded && (
+                    <div className="absolute inset-0 bg-gray-300 animate-pulse" />
+                  )}
+
+                  <img
+                    src={banner.image}
+                    alt={banner.alt || "Banner"}
+                    className={`w-full h-full object-cover transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"
+                      }`}
+                    onLoad={() =>
+                      setLoadedImages((prev) => ({
+                        ...prev,
+                        [banner.id]: true,
+                      }))
+                    }
+                  />
+                </div>
+              );
+            })}
+
+
+          </div>
 
           {/* Navigation Controls */}
           <button
@@ -395,31 +432,45 @@ const productsRef = useRef(null);
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12">
             Shop by Category
           </h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
-            {categoriesWithCounts.map((cat, i) => (
-              <div
-                key={i}
-                onClick={() => handleCategoryClick(cat.name)}
-                className={`bg-white rounded-xl p-6 text-center cursor-pointer transition-all duration-300 shadow-lg border-2 hover:shadow-xl ${selectedCategory === cat.name
-                    ? 'border-blue-500 shadow-xl transform scale-105'
-                    : 'border-gray-100 hover:border-gray-200'
-                  }`}
-              >
-                {/* Replace emoji with PNG image */}
-                <div className="flex justify-center mb-3">
-                  <img
-                    src={cat.icon}          // <-- imported PNG or dynamic path
-                    alt={cat.name}
-                    className="w-12 h-12 object-contain"
-                  />
-                </div>
-
-                <h3 className="font-semibold text-gray-800 mb-2">{cat.name}</h3>
-                <p className="text-sm text-gray-500">{cat.products} Products</p>
+          {
+            categoriesLoading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                {[...Array(8)].map((_, i) => (
+                  <div key={i} className="bg-white rounded-xl p-6 shadow-lg border animate-pulse">
+                    <div className="w-12 h-12 mx-auto bg-gray-300 rounded mb-4"></div>
+                    <div className="h-4 bg-gray-300 rounded w-24 mx-auto mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-16 mx-auto"></div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
+                {categoriesWithCounts.map((cat, i) => (
+                  <div
+                    key={i}
+                    onClick={() => handleCategoryClick(cat.name)}
+                    className={`bg-white rounded-xl p-6 text-center cursor-pointer transition-all duration-300 shadow-lg border-2 hover:shadow-xl ${selectedCategory === cat.name
+                      ? 'border-blue-500 shadow-xl transform scale-105'
+                      : 'border-gray-100 hover:border-gray-200'
+                      }`}
+                  >
+                    {/* Replace emoji with PNG image */}
+                    <div className="flex justify-center mb-3">
+                      <img
+                        src={cat.icon}          // <-- imported PNG or dynamic path
+                        alt={cat.name}
+                        className="w-12 h-12 object-contain"
+                      />
+                    </div>
+
+                    <h3 className="font-semibold text-gray-800 mb-2">{cat.name}</h3>
+                    <p className="text-sm text-gray-500">{cat.products} Products</p>
+                  </div>
+                ))}
+              </div>
+            )
+          }
+
         </div>
       </section>
 
@@ -432,82 +483,103 @@ const productsRef = useRef(null);
             <p className="text-base text-gray-600 max-w-2xl mx-auto">{getSectionDescription()}</p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 md:gap-4 py-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
-            {getCurrentProducts().length > 0 ? (
-              getCurrentProducts().map((product) => (
-                <div
-                  key={product._id}
-                  className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden 
+          {
+            productsLoading ? (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {[...Array(10)].map((_, i) => (
+                    <div key={i} className="bg-white rounded-xl shadow-md p-4 animate-pulse">
+                      <div className="w-full h-40 bg-gray-200 rounded mb-4"></div>
+                      <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/3 mb-4"></div>
+                      <div className="h-8 bg-gray-300 rounded"></div>
+                    </div>
+                  ))}
+                </div>
+              </>
+
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 md:gap-4 py-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+                {getCurrentProducts().length > 0 ? (
+                  getCurrentProducts().map((product) => (
+                    <div
+                      key={product._id}
+                      className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden 
              hover:shadow-lg transition-transform duration-300 hover:scale-105"
-                >
-                  <div className="relative bg-gray-50 w-full h-44 sm:h-52 flex items-center justify-center">
-                    <img
-                      src={product.image ? `${import.meta.env.VITE_R2_PUBLIC_URL}/${product.image}` : "/api/placeholder/200/250"}
-                      alt={product.name}
-                      className="max-h-full max-w-full object-contain"
-                    />
+                    >
+                      <div className="relative bg-gray-50 w-full h-44 sm:h-52 flex items-center justify-center">
+                        <img
+                          src={product.image ? `${import.meta.env.VITE_R2_PUBLIC_URL}/${product.image}` : "/api/placeholder/200/250"}
+                          alt={product.name}
+                          className="max-h-full max-w-full object-contain"
+                        />
 
-                    {product.onOffer && (
-                      <span className="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 
+                        {product.onOffer && (
+                          <span className="absolute top-2 left-2 bg-red-500 text-white px-2 py-0.5 
                        rounded text-xs font-semibold">
-                        OFFER
-                      </span>
-                    )}
+                            OFFER
+                          </span>
+                        )}
 
-                    {product.outOfStock && (
-                      <span className="absolute top-2 right-2 bg-gray-600 text-white px-2 py-0.5 
+                        {product.outOfStock && (
+                          <span className="absolute top-2 right-2 bg-gray-600 text-white px-2 py-0.5 
                        rounded text-xs font-semibold">
-                        OUT
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="p-4">
-                    <h3 className="font-semibold text-gray-800 text-sm mb-1 line-clamp-2">{product.name}</h3>
-
-                    <p className="text-xs text-gray-500 mb-1">{product.size || "Standard"}</p>
-                    <p className="text-xs text-green-600 mb-2">Stock: {product.stock || 0}</p>
-
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-base font-bold text-gray-900">{product.price} QR</span>
-                        {product.originalPrice && product.onOffer && (
-                          <span className="text-xs text-gray-400 line-through">
-                            {product.originalPrice}
+                            OUT
                           </span>
                         )}
                       </div>
+
+                      <div className="p-4">
+                        <h3 className="font-semibold text-gray-800 text-sm mb-1 line-clamp-2">{product.name}</h3>
+
+                        <p className="text-xs text-gray-500 mb-1">{product.size || "Standard"}</p>
+                        <p className="text-xs text-green-600 mb-2">Stock: {product.stock || 0}</p>
+
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-base font-bold text-gray-900">{product.price} QR</span>
+                            {product.originalPrice && product.onOffer && (
+                              <span className="text-xs text-gray-400 line-through">
+                                {product.originalPrice}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <button
+                          className={`w-full py-2 text-xs font-semibold rounded-md flex items-center justify-center space-x-2 transition-all ${product.outOfStock
+                            ? "bg-gray-400 cursor-not-allowed text-white"
+                            : addingToCart[product._id]
+                              ? "bg-teal-500 cursor-wait text-white"
+                              : "bg-teal-600 hover:bg-teal-700 text-white"
+                            }`}
+                          disabled={product.outOfStock || addingToCart[product._id]}
+                          onClick={() => handleAddToCart(product)}
+                        >
+                          <span>+</span>
+                          <span>
+                            {product.outOfStock
+                              ? "Out of Stock"
+                              : addingToCart[product._id]
+                                ? "Adding..."
+                                : "Add"}
+                          </span>
+                        </button>
+                      </div>
                     </div>
 
-                    <button
-                      className={`w-full py-2 text-xs font-semibold rounded-md flex items-center justify-center space-x-2 transition-all ${product.outOfStock
-                          ? "bg-gray-400 cursor-not-allowed text-white"
-                          : addingToCart[product._id]
-                            ? "bg-teal-500 cursor-wait text-white"
-                            : "bg-teal-600 hover:bg-teal-700 text-white"
-                        }`}
-                      disabled={product.outOfStock || addingToCart[product._id]}
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      <span>+</span>
-                      <span>
-                        {product.outOfStock
-                          ? "Out of Stock"
-                          : addingToCart[product._id]
-                            ? "Adding..."
-                            : "Add"}
-                      </span>
-                    </button>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center py-8">
+                    <p className="text-gray-500 text-base">No products found in this category.</p>
                   </div>
-                </div>
-
-              ))
-            ) : (
-              <div className="col-span-full text-center py-8">
-                <p className="text-gray-500 text-base">No products found in this category.</p>
+                )}
               </div>
-            )}
-          </div>
+            )
+          }
+
+
         </div>
       </section>
 
