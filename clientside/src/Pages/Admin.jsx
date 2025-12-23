@@ -626,6 +626,7 @@ const Admin = () => {
               <option>Diapers</option>
               <option>Baby Wipes</option>
               <option>Baby Care</option>
+              <option>Period Panty</option>
               
             </select>
           </div>
