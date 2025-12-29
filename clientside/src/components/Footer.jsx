@@ -1,10 +1,11 @@
 import React from 'react';
 import { MapPin, Phone, Mail, Clock, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
 
 const Footer = () => {
   const navigate = useNavigate();
-
+   const [showPolicy, setShowPolicy] = useState(false);
   return (
     <footer className="bg-gradient-to-r from-slate-800 via-teal-900 to-slate-700 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -77,68 +78,78 @@ const Footer = () => {
       Privacy Policy
     </a> */}
 
-    <a
+    {/* <a
       href="#return-policy"
       className="block text-gray-300 hover:text-cyan-400 text-sm transition-colors"
     >
       Return & Exchange Policy
-    </a>
+    </a> */}
   </div>
 </div>
 
         </div>
         {/* Return & Exchange Policy */}
-<div
-  id="return-policy"
-  className="mt-10 border-t border-gray-600 pt-6 text-gray-300 text-sm leading-relaxed"
->
-  <h4 className="text-cyan-400 font-semibold mb-3">
-    Return & Exchange Policy
-  </h4>
+ <div className="mt-4 text-sm text-gray-400">
+      
+      {/* Clickable Footer Link */}
+      <button
+        onClick={() => setShowPolicy(!showPolicy)}
+        className="text-cyan-400 hover:underline focus:outline-none"
+      >
+        Return & Exchange Policy
+      </button>
 
-  <p className="mb-3">
-    We value our customers and strive to ensure complete satisfaction with every
-    purchase. Please review our return and exchange policy carefully before
-    placing an order.
-  </p>
+      {/* Policy Content */}
+      {showPolicy && (
+        <div
+          id="return-policy"
+          className="mt-3 border-t border-gray-700 pt-3 text-gray-300 leading-relaxed"
+        >
+          <p className="mb-3">
+            We value our customers and strive to ensure complete satisfaction with every
+            purchase. Please review our return and exchange policy carefully before
+            placing an order.
+          </p>
 
-  <ul className="list-disc list-inside space-y-2 mb-4">
-    <li>
-      Hygiene products are eligible for return or exchange only if the request is
-      initiated within <strong>5 days</strong> of purchase.
-    </li>
-    <li>
-      Products must be unused, unopened, and in their original packaging with
-      all seals intact.
-    </li>
-    <li>
-      Any free items or products received as part of a set or promotion must also
-      be unopened and returned in original condition.
-    </li>
-    <li>
-      Opened or used hygiene products are <strong>non-returnable</strong>.
-    </li>
-    <li>
-      Products damaged due to misuse, negligence, or improper handling are not
-      eligible.
-    </li>
-    <li>
-      Items without original packaging or missing free/set items will not be
-      accepted.
-    </li>
-  </ul>
+          <ul className="list-disc list-inside space-y-2 mb-4">
+            <li>
+              Hygiene products are eligible for return or exchange only if the request is
+              initiated within <strong>5 days</strong> of purchase.
+            </li>
+            <li>
+              Products must be unused, unopened, and in their original packaging with
+              all seals intact.
+            </li>
+            <li>
+              Any free items or products received as part of a set or promotion must also
+              be unopened and returned in original condition.
+            </li>
+            <li>
+              Opened or used hygiene products are <strong>non-returnable</strong>.
+            </li>
+            <li>
+              Products damaged due to misuse, negligence, or improper handling are not
+              eligible.
+            </li>
+            <li>
+              Items without original packaging or missing free/set items will not be
+              accepted.
+            </li>
+          </ul>
 
-  <p className="mb-1">
-    <strong>Exchange Delivery Charge:</strong> QAR 10  
-    <span className="text-gray-400 ml-1">
-      (Add any item to unlock free delivery)
-    </span>
-  </p>
+          <p className="mb-1">
+            <strong>Exchange Delivery Charge:</strong> QAR 10
+            <span className="text-gray-400 ml-1">
+              (Add any item to unlock free delivery)
+            </span>
+          </p>
 
-  <p>
-    <strong>Return Delivery Charge:</strong> QAR 15
-  </p>
-</div>
+          <p>
+            <strong>Return Delivery Charge:</strong> QAR 15
+          </p>
+        </div>
+      )}
+    </div>
 
 
         <div className="border-t border-gray-600 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
