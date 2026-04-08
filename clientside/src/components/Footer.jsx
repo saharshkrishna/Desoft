@@ -138,14 +138,14 @@ const Footer = () => {
           </ul>
 
           <p className="mb-1">
-            <strong>Exchange Delivery Charge:</strong> QAR 10
+            <strong>Exchange Delivery Charge:</strong> QAR 15
             <span className="text-gray-400 ml-1">
               (Add any item to unlock free delivery)
             </span>
           </p>
 
           <p>
-            <strong>Return Delivery Charge:</strong> QAR 15
+            <strong>Return Delivery Charge:</strong> QAR 20
           </p>
         </div>
       )}
