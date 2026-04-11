@@ -145,7 +145,7 @@ const Footer = () => {
           </p>
 
           <p>
-            <strong>Return Delivery Charge:</strong> QAR 20
+            <strong>Return Delivery Charge:</strong> QAR 25
           </p>
         </div>
       )}
