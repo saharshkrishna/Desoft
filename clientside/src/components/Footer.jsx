@@ -114,7 +114,7 @@ const Footer = () => {
           <ul className="list-disc list-inside space-y-2 mb-4">
             <li>
               Hygiene products are eligible for return or exchange only if the request is
-              initiated within <strong>5 days</strong> of purchase.
+              initiated within <strong>2 days</strong> of purchase.
             </li>
             <li>
               Products must be unused, unopened, and in their original packaging with
